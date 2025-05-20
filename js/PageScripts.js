@@ -1,11 +1,11 @@
-let _canRedirect = false;
-let _responseObj;
-let _formFillGuid;
-// let urlBase = 'https://leadhandlingapi.azurewebsites.net';
-if (isStaging()) {
-    // urlBase = 'https://leadhandlingapi-staging.azurewebsites.net';
-}
-let apiKey = 'a03844ea-97b2-4907-90f9-862106523f74'
+// // let _canRedirect = false;
+// let _responseObj;
+// let _formFillGuid;
+// // let urlBase = 'https://leadhandlingapi.azurewebsites.net';
+// if (isStaging()) {
+//     // urlBase = 'https://leadhandlingapi-staging.azurewebsites.net';
+// }
+// let apiKey = 'a03844ea-97b2-4907-90f9-862106523f74'
 const CONST_AUTO_QUALIFIED = 'AutoQualified';
 const CONST_AUTO_REJECT = 'AutoReject';
 const CONST_NEEDS_REVIEW = 'NeedsReview';
@@ -205,40 +205,42 @@ function getCookie(cname) {
 }
 
 function handleResponse() {
-    if (!_responseObj || !_canRedirect) {
-        return;
-    }
-
-    if (isGtmLoaded() && _responseObj.requestId) {
-        window.dataLayer.push({ event: "gtm.submissionId", submissionId: _responseObj.requestId });
-    }
-
-    if (isGtmLoaded()) {
-        let formStatus = getFormStatus();
-        if (formStatus == CONST_AUTO_QUALIFIED) {
-            window.dataLayer.push({ event: "gtm.AutoQualified" });
-        }
-        else if (formStatus == CONST_AUTO_REJECT) {
-            window.dataLayer.push({ event: "gtm.AutoReject" });
-        }
-        else if (formStatus == CONST_NEEDS_REVIEW) {
-            window.dataLayer.push({ event: "gtm.NeedsReview" });
-        }
-    }
-
     document.body.classList.remove("pendingFormSubmit");
+    showGoogleFormAfterQuiz();
+    // if (!_responseObj || !_canRedirect) {
+    //     return;
+    // }
 
-    if (_responseObj.actionType == "smartForm" && _responseObj.message) {
-        showGoogleFormAfterQuiz();
-    }
-    else {
-        var url = document.getElementById("formAfterSubmitActionUrl")
-            ? document.getElementById("formAfterSubmitActionUrl").value
-            : "http://www.pintas.com";
-        if (url) {
-            document.location.href = url + window.location.search;
-        }
-    }
+    // if (isGtmLoaded() && _responseObj.requestId) {
+    //     window.dataLayer.push({ event: "gtm.submissionId", submissionId: _responseObj.requestId });
+    // }
+
+    // if (isGtmLoaded()) {
+    //     let formStatus = getFormStatus();
+    //     if (formStatus == CONST_AUTO_QUALIFIED) {
+    //         window.dataLayer.push({ event: "gtm.AutoQualified" });
+    //     }
+    //     else if (formStatus == CONST_AUTO_REJECT) {
+    //         window.dataLayer.push({ event: "gtm.AutoReject" });
+    //     }
+    //     else if (formStatus == CONST_NEEDS_REVIEW) {
+    //         window.dataLayer.push({ event: "gtm.NeedsReview" });
+    //     }
+    // }
+
+    // document.body.classList.remove("pendingFormSubmit");
+
+    // if (_responseObj.actionType == "smartForm" && _responseObj.message) {
+    //     showGoogleFormAfterQuiz();
+    // }
+    // else {
+    //     var url = document.getElementById("formAfterSubmitActionUrl")
+    //         ? document.getElementById("formAfterSubmitActionUrl").value
+    //         : "http://www.pintas.com";
+    //     if (url) {
+    //         document.location.href = url + window.location.search;
+    //     }
+    // }
 }
 
 function getRecaptchaSiteKey() {
@@ -282,15 +284,15 @@ function setRecaptchaKeyAndSubmit() {
     });
 }
 
-function isGtmLoaded() {
-    const gtmStartedEvent = window.dataLayer?.find((element) => element["gtm.start"]);
-    if (!gtmStartedEvent) {
-        return false;
-    } else if (!gtmStartedEvent["gtm.uniqueEventId"]) {
-        return false;
-    }
-    return true;
-}
+// function isGtmLoaded() {
+//     const gtmStartedEvent = window.dataLayer?.find((element) => element["gtm.start"]);
+//     if (!gtmStartedEvent) {
+//         return false;
+//     } else if (!gtmStartedEvent["gtm.uniqueEventId"]) {
+//         return false;
+//     }
+//     return true;
+// }
 
 function handleDataSend() {
     if (typeof grecaptcha == "object") {
@@ -301,7 +303,7 @@ function handleDataSend() {
 }
 
 function redirectOrSetCanRedirect() {
-    _canRedirect = true;
+    // _canRedirect = true;
     handleResponse();
 }
 
@@ -325,12 +327,12 @@ if (submitButton) {
 
         handleDataSend();
 
-        if (isGtmLoaded()) {
-            window.dataLayer.push({ event: "gtm.submit", eventCallback: redirectOrSetCanRedirect });
-        } else {
-            redirectOrSetCanRedirect();
-        }
-    };
+    //     if (isGtmLoaded()) {
+    //         window.dataLayer.push({ event: "gtm.submit", eventCallback: redirectOrSetCanRedirect });
+    //     } else {
+    //         redirectOrSetCanRedirect();
+    //     }
+     };
 }
 
 if (document.querySelectorAll("form").length >= 1 && !document.querySelector(".multiStepForm")) {
@@ -780,14 +782,6 @@ function handleDeferredScripts() {
     }
     windowLoaded();
 }
-function showGoogleFormAfterQuiz() {
-    // Hide the quiz form
-    var quizForm = document.getElementById('leadForm');
-    if (quizForm) quizForm.style.display = 'none';
-    // Show the Google Form
-    var googleForm = document.getElementById('googleFormContainer');
-    if (googleForm) googleForm.style.display = 'block';
-}
 // Disable old form submission completely
 document.addEventListener("DOMContentLoaded", function () {
     var quizForm = document.getElementById('leadForm');
@@ -799,5 +793,16 @@ document.addEventListener("DOMContentLoaded", function () {
         submitBtn.onclick = function(e) { e.preventDefault(); return false; };
     }
 });
+function showGoogleFormAfterQuiz() {
+    // Hide the quiz form
+    var quizForm = document.getElementById('leadForm');
+    if (quizForm) quizForm.style.display = 'none';
+    // Hide the submit button if it's outside the form
+    var submitBtn = document.querySelector('.submitButton');
+    if (submitBtn) submitBtn.style.display = 'none';
+    // Show the Google Form
+    var googleForm = document.getElementById('googleFormContainer');
+    if (googleForm) googleForm.style.display = 'block';
+}
 handleDeferredScripts();
 sendPageVisitEvent();
