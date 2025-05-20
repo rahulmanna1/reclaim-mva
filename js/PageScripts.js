@@ -229,7 +229,7 @@ function handleResponse() {
     document.body.classList.remove("pendingFormSubmit");
 
     if (_responseObj.actionType == "smartForm" && _responseObj.message) {
-        showPostSubmitContainer(_responseObj.message);
+        showGoogleFormAfterQuiz();
     }
     else {
         var url = document.getElementById("formAfterSubmitActionUrl")
@@ -780,5 +780,24 @@ function handleDeferredScripts() {
     }
     windowLoaded();
 }
+function showGoogleFormAfterQuiz() {
+    // Hide the quiz form
+    var quizForm = document.getElementById('leadForm');
+    if (quizForm) quizForm.style.display = 'none';
+    // Show the Google Form
+    var googleForm = document.getElementById('googleFormContainer');
+    if (googleForm) googleForm.style.display = 'block';
+}
+// Disable old form submission completely
+document.addEventListener("DOMContentLoaded", function () {
+    var quizForm = document.getElementById('leadForm');
+    if (quizForm) {
+        quizForm.onsubmit = function() { return false; };
+    }
+    var submitBtn = document.querySelector('.submitButton');
+    if (submitBtn) {
+        submitBtn.onclick = function(e) { e.preventDefault(); return false; };
+    }
+});
 handleDeferredScripts();
 sendPageVisitEvent();
