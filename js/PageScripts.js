@@ -1,6 +1,6 @@
 // // let _canRedirect = false;
-// let _responseObj;
-// let _formFillGuid;
+let _responseObj;
+let _formFillGuid;
 // // let urlBase = 'https://leadhandlingapi.azurewebsites.net';
 // if (isStaging()) {
 //     // urlBase = 'https://leadhandlingapi-staging.azurewebsites.net';
@@ -20,8 +20,9 @@ const TOTAL_SIZE_LIMIT_MB = 20;
 let LOADER_CURRENT_MESSAGE_DELAY = 3000;
 let LOADER_CURRENT_LEFT = -1140;
 let hiddenElements = [];
-
+const submitEndpoint = "http://localhost:3001/api/track-quiz"; // Replace with your actual endpoint
 var isMobile = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) < 400;
+
 document.addEventListener("DOMContentLoaded", function () {
     document.body.classList.remove("pendingFormSubmit");
     if (document.querySelector(".submitButton")?.length) {
@@ -142,7 +143,7 @@ function sendData() {
             }
         }
     });
-    // var submitEndpoint = `${urlBase}/api/Submit?apiKey=${apiKey}`;
+
     const FD = new FormData(form);
     let queryParams = new URLSearchParams(window.location.search);
     addCookiesToQueryParams(queryParams, ['_fbp', '_fbc', '_ga']);
@@ -206,41 +207,9 @@ function getCookie(cname) {
 
 function handleResponse() {
     document.body.classList.remove("pendingFormSubmit");
-    showGoogleFormAfterQuiz();
-    // if (!_responseObj || !_canRedirect) {
-    //     return;
-    // }
-
-    // if (isGtmLoaded() && _responseObj.requestId) {
-    //     window.dataLayer.push({ event: "gtm.submissionId", submissionId: _responseObj.requestId });
-    // }
-
-    // if (isGtmLoaded()) {
-    //     let formStatus = getFormStatus();
-    //     if (formStatus == CONST_AUTO_QUALIFIED) {
-    //         window.dataLayer.push({ event: "gtm.AutoQualified" });
-    //     }
-    //     else if (formStatus == CONST_AUTO_REJECT) {
-    //         window.dataLayer.push({ event: "gtm.AutoReject" });
-    //     }
-    //     else if (formStatus == CONST_NEEDS_REVIEW) {
-    //         window.dataLayer.push({ event: "gtm.NeedsReview" });
-    //     }
-    // }
-
-    // document.body.classList.remove("pendingFormSubmit");
-
-    // if (_responseObj.actionType == "smartForm" && _responseObj.message) {
-    //     showGoogleFormAfterQuiz();
-    // }
-    // else {
-    //     var url = document.getElementById("formAfterSubmitActionUrl")
-    //         ? document.getElementById("formAfterSubmitActionUrl").value
-    //         : "http://www.pintas.com";
-    //     if (url) {
-    //         document.location.href = url + window.location.search;
-    //     }
-    // }
+    alert("Thank you for submitting the form!");
+    // Optionally, reset your form here:
+    // document.getElementById('leadForm').reset();
 }
 
 function getRecaptchaSiteKey() {
@@ -284,27 +253,12 @@ function setRecaptchaKeyAndSubmit() {
     });
 }
 
-// function isGtmLoaded() {
-//     const gtmStartedEvent = window.dataLayer?.find((element) => element["gtm.start"]);
-//     if (!gtmStartedEvent) {
-//         return false;
-//     } else if (!gtmStartedEvent["gtm.uniqueEventId"]) {
-//         return false;
-//     }
-//     return true;
-// }
-
 function handleDataSend() {
     if (typeof grecaptcha == "object") {
         setRecaptchaKeyAndSubmit();
     } else {
         sendData();
     }
-}
-
-function redirectOrSetCanRedirect() {
-    // _canRedirect = true;
-    handleResponse();
 }
 
 const submitButton = document.querySelector(".submitButton");
@@ -320,19 +274,11 @@ if (submitButton) {
                 fireOffNextMessageAndWait();
             }, LOADER_CURRENT_MESSAGE_DELAY);
         }
-
         try {
             document.querySelector(".submitButton").setAttribute('disabled', true);
         } catch (error) { }
-
         handleDataSend();
-
-    //     if (isGtmLoaded()) {
-    //         window.dataLayer.push({ event: "gtm.submit", eventCallback: redirectOrSetCanRedirect });
-    //     } else {
-    //         redirectOrSetCanRedirect();
-    //     }
-     };
+    };
 }
 
 if (document.querySelectorAll("form").length >= 1 && !document.querySelector(".multiStepForm")) {
@@ -782,27 +728,6 @@ function handleDeferredScripts() {
     }
     windowLoaded();
 }
-// Disable old form submission completely
-document.addEventListener("DOMContentLoaded", function () {
-    var quizForm = document.getElementById('leadForm');
-    if (quizForm) {
-        quizForm.onsubmit = function() { return false; };
-    }
-    var submitBtn = document.querySelector('.submitButton');
-    if (submitBtn) {
-        submitBtn.onclick = function(e) { e.preventDefault(); return false; };
-    }
-});
-function showGoogleFormAfterQuiz() {
-    // Hide the quiz form
-    var quizForm = document.getElementById('leadForm');
-    if (quizForm) quizForm.style.display = 'none';
-    // Hide the submit button if it's outside the form
-    var submitBtn = document.querySelector('.submitButton');
-    if (submitBtn) submitBtn.style.display = 'none';
-    // Show the Google Form
-    var googleForm = document.getElementById('googleFormContainer');
-    if (googleForm) googleForm.style.display = 'block';
-}
+
 handleDeferredScripts();
 sendPageVisitEvent();
